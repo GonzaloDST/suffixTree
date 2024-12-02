@@ -40,7 +40,7 @@ void SuffixTree::build(int index) {
                 nodoActual = siguienteHijo;
                 continue;
             }
-            if (text[siguienteHijo->start + size_pivot] == text[index])
+            if (size_pivot < size_siguienteHijo && text[siguienteHijo->start + size_pivot] == text[index])
             { 
                 size_pivot++;
                 if (aux && nodoActual != root) {
@@ -70,6 +70,7 @@ void SuffixTree::build(int index) {
                 aux = nullptr;
             }
         }
+        
         suffix_restantes--; //Solo se disminuye cuando todo el arbol se encuentra actualizado, es decir se acabo de insertar este sufijo
         if (nodoActual == root && size_pivot > 0) {
             size_pivot--;
@@ -114,7 +115,6 @@ bool SuffixTree::search(const string& pattern) {
         // Se avanza todas las coincidencias, sin pasarse el tamaño del pattern o del nodoHijo
         { 
             i++;
-            cout<<"pos"<<i<<endl;
             j++;
         }
 
@@ -134,25 +134,33 @@ bool SuffixTree::search(const string& pattern) {
 void SuffixTree::searchOccurrences(const string& pattern, vector<int>& result, Node* nodoInicial, int nodoPivot) {
     if (!nodoInicial) return;
 
-    
-    for (auto& child : nodoInicial->children) {
-        Node* nodoHijo = child.second;
-        int size_siguienteHijo = nodoHijo->size();
-        int i = 0;
-
-        while (i < size_siguienteHijo && nodoPivot + i < pattern.size() && text[nodoHijo->start + i] == pattern[nodoPivot + i]) {
-            i++;
+    int i = 0;
+    while (i < pattern.size()) {
+        if (nodoInicial->children.find(pattern[i]) == nodoInicial->children.end()) {
+            return; // No se encontró un hijo con ese caracter
         }
 
-        if (nodoPivot + i == pattern.size()) {
+        Node* nodoHijo = nodoInicial->children[pattern[i]];
+        int size_siguienteHijo = nodoHijo->size();
+        int j = 0;
+
+        while (j < size_siguienteHijo && i < pattern.size() && pattern[i] == text[nodoHijo->start + j]) {
+            i++;
+            j++;
+        }
+
+        if (j == size_siguienteHijo && i == pattern.size()) {
             retornarHojas(nodoHijo, result);
             return;
-        }
-        else if (i == size_siguienteHijo) {
-            searchOccurrences(pattern, result, nodoHijo, nodoPivot + i);
+        } else if (j == size_siguienteHijo) {
+            nodoInicial = nodoHijo;
+        } else {
+            return; 
         }
     }
 }
+
+
 
 
 void SuffixTree::retornarHojas(Node* node, vector<int>& result) {
