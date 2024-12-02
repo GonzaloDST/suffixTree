@@ -3,12 +3,12 @@
 // #include "mainwindow.h"
 
 int main(){
-    SuffixTree tree("banana");
+    SuffixTree tree("126366");
     tree.printSuffixTree(tree);
     cout<<endl;
     vector<int> result;
     cout<<"TRUEORFALSE"<<tree.search("a")<<endl;
-    result = tree.searchOccurrences("a");
+    result = tree.searchOccurrences("6");
     for(auto x: result){
         cout<<x<<endl;
     }

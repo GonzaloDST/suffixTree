@@ -1,6 +1,16 @@
 #include "suffixTree.h"
 
 
+SuffixTree::~SuffixTree(){
+    deleteTrees(root);
+}
+void SuffixTree::deleteTrees(Node* node){
+    if(!node){return;}
+    for(auto &child: node->children){
+        deleteTrees(child.second);
+    }
+    delete node;
+}
 void SuffixTree::build(int index) {
 
     suffix_restantes++;

@@ -19,8 +19,10 @@ private:
     void build(int index);
     void searchOccurrences(const string& pattern, vector<int>& result, Node* node, int nodoPivot);
     void retornarHojas(Node* node, vector<int>& result);
+    void deleteTrees(Node* node);
 public:
     SuffixTree(const string& input);
+    ~SuffixTree();
     bool search(const string& pattern);
     vector<int> searchOccurrences(const string& pattern);
     void printSuffixTree(const SuffixTree& tree);
