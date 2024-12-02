@@ -170,8 +170,8 @@ void SuffixTree::printTree(Node* node, const string& text,int level) {
     if (!node) return;
 
     if (node->start != -1) { 
-        for (int i = 0; i < level; ++i) cout << "      ";
-        cout << " l-- " << text.substr(node->start, node->end - node->start + 1)
+        for (int i = 0; i < level; ++i) cout << "     ";
+        cout << " l -- " << text.substr(node->start, node->end - node->start + 1)
             << " [" << node->start << ", " << node->end << "]" << endl;
     }
 
@@ -184,6 +184,6 @@ void SuffixTree::printTree(Node* node, const string& text,int level) {
 
 
 void SuffixTree::printSuffixTree(const SuffixTree& tree) {
-    cout << "Suffix Tree Structure:" << endl;
+    cout << "Suffix Tree:" << endl;
     printTree(tree.root, tree.text);
     }
