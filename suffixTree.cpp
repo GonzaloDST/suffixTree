@@ -134,32 +134,41 @@ bool SuffixTree::search(const string& pattern) {
 void SuffixTree::searchOccurrences(const string& pattern, vector<int>& result, Node* nodoInicial, int nodoPivot) {
     if (!nodoInicial) return;
 
-    int i = 0;
+    int i = nodoPivot;
+    Node* current = nodoInicial;
+    
     while (i < pattern.size()) {
-        if (nodoInicial->children.find(pattern[i]) == nodoInicial->children.end()) {
+        cout << "Visitando nodo: " << current << " con caracter: " << pattern[i] << endl;
+        if (current->children.find(pattern[i]) == current->children.end()) {
+            cout << "No se encontró un hijo con el caracter: " << pattern[i] << endl;
             return; // No se encontró un hijo con ese caracter
         }
 
-        Node* nodoHijo = nodoInicial->children[pattern[i]];
-        int size_siguienteHijo = nodoHijo->size();
+        Node* child = current->children[pattern[i]];
         int j = 0;
-
-        while (j < size_siguienteHijo && i < pattern.size() && pattern[i] == text[nodoHijo->start + j]) {
+        while (j < child->size() && i < pattern.size() && pattern[i] == text[child->start + j]) {
+            cout << "Coincidencia encontrada: " << pattern[i] << " en posición " << i << " en nodo " << child << endl;
+            result.push_back(i);
             i++;
             j++;
         }
 
-        if (j == size_siguienteHijo && i == pattern.size()) {
-            retornarHojas(nodoHijo, result);
+        if (i == pattern.size()) {
+            cout << "Patrón completo encontrado, llamando a retornarHojas para el nodo: " << child << endl;
+            retornarHojas(child, result);
             return;
-        } else if (j == size_siguienteHijo) {
-            nodoInicial = nodoHijo;
+        } else if (j == child->size()) {
+            cout << "Avanzando al siguiente nodo: " << child << endl;
+            current = child;
+            nodoPivot += j;
         } else {
-            return; 
+            cout << "No se encontró coincidencias en nodo: " << child << endl;
+            return; // No se encontró coincidencias
         }
     }
-}
 
+    retornarHojas(current, result);
+}
 
 
 
@@ -167,14 +176,20 @@ void SuffixTree::retornarHojas(Node* node, vector<int>& result) {
     if (!node) return;
 
     if (node->isLeaf()) {
-        result.push_back( (node->start));
+        // Ajustamos la posición para reflejar la posición original en el texto
+        int adjusted_position = node->start - (text.size() - node->end);
+        result.push_back(adjusted_position);
+        cout << "Hoja encontrada en posición ajustada: " << adjusted_position << " para nodo: " << node << endl;
         return;
     }
 
     for (auto& child : node->children) {
-        retornarHojas(child.second, result); //Todos los que empiezan con el pattern
+        cout << "Recorriendo hijo: " << child.second << " del nodo: " << node << endl;
+        retornarHojas(child.second, result); // Buscar en todos los nodos hijos
     }
 }
+
+
 
 vector<int> SuffixTree::searchOccurrences(const string& pattern) {
     vector<int> result;
@@ -189,7 +204,7 @@ void SuffixTree::printTree(Node* node, const string& text,int level) {
 
     if (node->start != -1) { 
         for (int i = 0; i < level; ++i) cout << "     ";
-        cout << " l -- " << text.substr(node->start, node->end - node->start + 1)
+        cout << " l" <<"Nivel = "<<level<<" -- " << text.substr(node->start, node->end - node->start + 1)
             << " [" << node->start << ", " << node->end << "]" << endl;
     }
 

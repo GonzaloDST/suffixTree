@@ -13,3 +13,4 @@ bool Node::isLeaf() const {
 int Node::size(){
         return (this->end - this->start + 1);
     }
+
